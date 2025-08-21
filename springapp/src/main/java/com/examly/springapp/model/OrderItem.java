@@ -1,74 +1,55 @@
 package com.examly.springapp.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
-@Table(name = "order_items")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class OrderItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private Order order;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnore // Avoid full product serialization to prevent recursion and oversized payloads
     private Product product;
 
+    @Transient // Not persisted, used only for JSON serialization/deserialization of productId
+    private Long productId;
+
     private Integer quantity;
+
     private Double priceAtPurchase;
 
-    // Private constructor for Builder
-    private OrderItem(Builder builder) {
-        this.id = builder.id;
-        this.order = builder.order;
-        this.product = builder.product;
-        this.quantity = builder.quantity;
-        this.priceAtPurchase = builder.priceAtPurchase;
+    @JsonProperty("productId") // Controls JSON property name for serialization/deserialization of productId
+    public Long getProductId() {
+        if (product != null) {
+            return product.getProductId();
+        }
+        return productId;
     }
 
-    // Getters and Setters
-
-    public static Builder builder() {
-        return new Builder();
+    @JsonProperty("productId")
+    public void setProductId(Long productId) {
+        this.productId = productId;
+        // Clear product reference; will be set later in service layer after lookup by productId
+        this.product = null;
     }
 
-    public static class Builder {
-        private Long id;
-        private Order order;
-        private Product product;
-        private Integer quantity;
-        private Double priceAtPurchase;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    @JsonBackReference // Paired with Order's @JsonManagedReference to handle bidirectional JSON serialization
+    private Order order;
 
-        public Builder setId(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder setOrder(Order order) {
-            this.order = order;
-            return this;
-        }
-
-        public Builder setProduct(Product product) {
-            this.product = product;
-            return this;
-        }
-
-        public Builder setQuantity(Integer quantity) {
-            this.quantity = quantity;
-            return this;
-        }
-
-        public Builder setPriceAtPurchase(Double priceAtPurchase) {
-            this.priceAtPurchase = priceAtPurchase;
-            return this;
-        }
-
-        public OrderItem build() {
-            return new OrderItem(this);
-        }
+    public Long getId() {
+        return id;
     }
 }

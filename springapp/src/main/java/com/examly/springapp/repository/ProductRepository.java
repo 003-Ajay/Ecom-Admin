@@ -1,10 +1,8 @@
-// src/main/java/com/examly/springapp/repository/ProductRepository.java
 package com.examly.springapp.repository;
 
-import com.examly.springapp.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
+import com.examly.springapp.model.Product;
+
 public interface ProductRepository extends JpaRepository<Product, Long> {
 }
