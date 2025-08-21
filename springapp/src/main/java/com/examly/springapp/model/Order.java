@@ -20,73 +20,76 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 
-    public Order() {
-        this.orderDate = LocalDateTime.now();
-        this.status = "PENDING";
+    // Private constructor for Builder
+    private Order(Builder builder) {
+        this.id = builder.id;
+        this.customerName = builder.customerName;
+        this.customerEmail = builder.customerEmail;
+        this.shippingAddress = builder.shippingAddress;
+        this.totalAmount = builder.totalAmount;
+        this.status = builder.status;
+        this.orderDate = builder.orderDate;
+        this.orderItems = builder.orderItems;
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
+
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public static class Builder {
+        private Long id;
+        private String customerName;
+        private String customerEmail;
+        private String shippingAddress;
+        private Double totalAmount;
+        private String status;
+        private LocalDateTime orderDate;
+        private List<OrderItem> orderItems;
 
-    public String getCustomerName() {
-        return customerName;
-    }
+        public Builder setId(Long id) {
+            this.id = id;
+            return this;
+        }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
+        public Builder setCustomerName(String customerName) {
+            this.customerName = customerName;
+            return this;
+        }
 
-    public String getCustomerEmail() {
-        return customerEmail;
-    }
+        public Builder setCustomerEmail(String customerEmail) {
+            this.customerEmail = customerEmail;
+            return this;
+        }
 
-    public void setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
-    }
+        public Builder setShippingAddress(String shippingAddress) {
+            this.shippingAddress = shippingAddress;
+            return this;
+        }
 
-    public String getShippingAddress() {
-        return shippingAddress;
-    }
+        public Builder setTotalAmount(Double totalAmount) {
+            this.totalAmount = totalAmount;
+            return this;
+        }
 
-    public void setShippingAddress(String shippingAddress) {
-        this.shippingAddress = shippingAddress;
-    }
+        public Builder setStatus(String status) {
+            this.status = status;
+            return this;
+        }
 
-    public Double getTotalAmount() {
-        return totalAmount;
-    }
+        public Builder setOrderDate(LocalDateTime orderDate) {
+            this.orderDate = orderDate;
+            return this;
+        }
 
-    public void setTotalAmount(Double totalAmount) {
-        this.totalAmount = totalAmount;
-    }
+        public Builder setOrderItems(List<OrderItem> orderItems) {
+            this.orderItems = orderItems;
+            return this;
+        }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+        public Order build() {
+            return new Order(this);
+        }
     }
 }

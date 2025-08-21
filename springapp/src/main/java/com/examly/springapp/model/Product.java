@@ -1,4 +1,3 @@
-// src/main/java/com/examly/springapp/model/Product.java
 package com.examly.springapp.model;
 
 import jakarta.persistence.*;
@@ -16,60 +15,69 @@ public class Product {
     private Integer stockQuantity;
     private String imageUrl;
 
+    // Private constructor for Builder
+    private Product(Builder builder) {
+        this.id = builder.id;
+        this.name = builder.name;
+        this.description = builder.description;
+        this.price = builder.price;
+        this.category = builder.category;
+        this.stockQuantity = builder.stockQuantity;
+        this.imageUrl = builder.imageUrl;
+    }
+
     // Getters and Setters
-    public Long getId() {
-        return id;
+
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public static class Builder {
+        private Long id;
+        private String name;
+        private String description;
+        private Double price;
+        private String category;
+        private Integer stockQuantity;
+        private String imageUrl;
 
-    public String getName() {
-        return name;
-    }
+        public Builder setId(Long id) {
+            this.id = id;
+            return this;
+        }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
 
-    public String getDescription() {
-        return description;
-    }
+        public Builder setDescription(String description) {
+            this.description = description;
+            return this;
+        }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+        public Builder setPrice(Double price) {
+            this.price = price;
+            return this;
+        }
 
-    public Double getPrice() {
-        return price;
-    }
+        public Builder setCategory(String category) {
+            this.category = category;
+            return this;
+        }
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+        public Builder setStockQuantity(Integer stockQuantity) {
+            this.stockQuantity = stockQuantity;
+            return this;
+        }
 
-    public String getCategory() {
-        return category;
-    }
+        public Builder setImageUrl(String imageUrl) {
+            this.imageUrl = imageUrl;
+            return this;
+        }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public Integer getStockQuantity() {
-        return stockQuantity;
-    }
-
-    public void setStockQuantity(Integer stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+        public Product build() {
+            return new Product(this);
+        }
     }
 }

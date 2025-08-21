@@ -1,4 +1,3 @@
-// src/main/java/com/examly/springapp/model/OrderItem.java
 package com.examly.springapp.model;
 
 import jakarta.persistence.*;
@@ -21,44 +20,55 @@ public class OrderItem {
     private Integer quantity;
     private Double priceAtPurchase;
 
+    // Private constructor for Builder
+    private OrderItem(Builder builder) {
+        this.id = builder.id;
+        this.order = builder.order;
+        this.product = builder.product;
+        this.quantity = builder.quantity;
+        this.priceAtPurchase = builder.priceAtPurchase;
+    }
+
     // Getters and Setters
-    public Long getId() {
-        return id;
+
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public static class Builder {
+        private Long id;
+        private Order order;
+        private Product product;
+        private Integer quantity;
+        private Double priceAtPurchase;
 
-    public Order getOrder() {
-        return order;
-    }
+        public Builder setId(Long id) {
+            this.id = id;
+            return this;
+        }
 
-    public void setOrder(Order order) {
-        this.order = order;
-    }
+        public Builder setOrder(Order order) {
+            this.order = order;
+            return this;
+        }
 
-    public Product getProduct() {
-        return product;
-    }
+        public Builder setProduct(Product product) {
+            this.product = product;
+            return this;
+        }
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+        public Builder setQuantity(Integer quantity) {
+            this.quantity = quantity;
+            return this;
+        }
 
-    public Integer getQuantity() {
-        return quantity;
-    }
+        public Builder setPriceAtPurchase(Double priceAtPurchase) {
+            this.priceAtPurchase = priceAtPurchase;
+            return this;
+        }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public Double getPriceAtPurchase() {
-        return priceAtPurchase;
-    }
-
-    public void setPriceAtPurchase(Double priceAtPurchase) {
-        this.priceAtPurchase = priceAtPurchase;
+        public OrderItem build() {
+            return new OrderItem(this);
+        }
     }
 }
