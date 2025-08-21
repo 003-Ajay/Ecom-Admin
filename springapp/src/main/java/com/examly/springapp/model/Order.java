@@ -1,4 +1,3 @@
-// src/main/java/com/examly/springapp/model/Order.java
 package com.examly.springapp.model;
 
 import jakarta.persistence.*;

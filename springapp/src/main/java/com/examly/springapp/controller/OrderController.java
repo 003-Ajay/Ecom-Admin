@@ -1,4 +1,3 @@
-// src/main/java/com/examly/springapp/controller/OrderController.java
 package com.examly.springapp.controller;
 
 import com.examly.springapp.dto.OrderCreateRequest;
@@ -33,18 +32,17 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
         Order order = orderService.getOrderById(orderId);
-        if (order != null) {
-            return new ResponseEntity<>(order, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
     @PatchMapping("/{orderId}/status")
-    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long orderId, @RequestBody Order updatedOrder) {
-        Order order = orderService.updateOrderStatus(orderId, updatedOrder.getStatus());
-        if (order != null) {
-            return new ResponseEntity<>(order, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long orderId, @RequestBody String newStatus) {
+        Order order = orderService.updateOrderStatus(orderId, newStatus);
+        return new ResponseEntity<>(order, HttpStatus.OK);
+    }
+
+    @ExceptionHandler(CustomExceptionHandler.ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(CustomExceptionHandler.ResourceNotFoundException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 }

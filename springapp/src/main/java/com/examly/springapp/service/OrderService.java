@@ -1,4 +1,3 @@
-// src/main/java/com/examly/springapp/service/OrderService.java
 package com.examly.springapp.service;
 
 import com.examly.springapp.dto.OrderCreateRequest;
@@ -43,13 +42,19 @@ public class OrderService {
         List<OrderItem> orderItems = orderCreateRequest.getOrderItems().stream()
                 .map(itemRequest -> {
                     Product product = productRepository.findById(itemRequest.getProductId())
-                            .orElseThrow(() -> new CustomExceptionHandler.ResourceNotFoundException("Product not found with ID: " + itemRequest.getProductId()));
+                            .orElseThrow(() -> new CustomExceptionHandler.ResourceNotFoundException("Product not found"));
+
+                    if (itemRequest.getQuantity() > product.getStockQuantity()) {
+                        throw new CustomExceptionHandler.ResourceNotFoundException("Insufficient stock");
+                    }
 
                     OrderItem orderItem = new OrderItem();
                     orderItem.setProduct(product);
                     orderItem.setQuantity(itemRequest.getQuantity());
                     orderItem.setPriceAtPurchase(product.getPrice());
                     orderItem.setOrder(order);
+                    product.setStockQuantity(product.getStockQuantity() - itemRequest.getQuantity());
+                    productRepository.save(product);
                     return orderItem;
                 })
                 .collect(Collectors.toList());
@@ -69,14 +74,22 @@ public class OrderService {
 
     public Order getOrderById(Long orderId) {
         return orderRepository.findById(orderId)
-                .orElseThrow(() -> new CustomExceptionHandler.ResourceNotFoundException("Order not found with ID: " + orderId));
+                .orElseThrow(() -> new CustomExceptionHandler.ResourceNotFoundException("Order not found"));
     }
 
     @Transactional
     public Order updateOrderStatus(Long orderId, String newStatus) {
+        if (!isValidStatus(newStatus)) {
+            throw new CustomExceptionHandler.ResourceNotFoundException("Invalid status");
+        }
+
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new CustomExceptionHandler.ResourceNotFoundException("Order not found with ID: " + orderId));
+                .orElseThrow(() -> new CustomExceptionHandler.ResourceNotFoundException("Order not found"));
         order.setStatus(newStatus);
         return orderRepository.save(order);
+    }
+
+    private boolean isValidStatus(String status) {
+        return List.of("PENDING", "SHIPPED", "DELIVERED", "CANCELLED").contains(status);
     }
 }
