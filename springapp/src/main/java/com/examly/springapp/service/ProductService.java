@@ -1,12 +1,13 @@
+// src/main/java/com/examly/springapp/service/ProductService.java
 package com.examly.springapp.service;
 
+import com.examly.springapp.exception.CustomExceptionHandler;
 import com.examly.springapp.model.Product;
 import com.examly.springapp.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -15,14 +16,6 @@ public class ProductService {
     private ProductRepository productRepository;
 
     public Product createProduct(Product product) {
-        // Product validation
-        if (product.getName() == null || product.getName().isEmpty() ||
-            product.getDescription() == null || product.getDescription().isEmpty() ||
-            product.getPrice() == null || product.getPrice() <= 0 ||
-            product.getCategory() == null || product.getCategory().isEmpty() ||
-            product.getStockQuantity() == null || product.getStockQuantity() < 0) {
-            throw new IllegalArgumentException("All fields except image URL are required, and price must be positive.");
-        }
         return productRepository.save(product);
     }
 
@@ -30,39 +23,30 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Product getProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
+    public Product getProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new CustomExceptionHandler.ResourceNotFoundException("Product not found with ID: " + productId));
     }
 
-    public Product updateProduct(Long id, Product productDetails) {
-        Optional<Product> productOptional = productRepository.findById(id);
-        if (productOptional.isPresent()) {
-            Product product = productOptional.get();
-            // Product validation
-            if (productDetails.getName() == null || productDetails.getName().isEmpty() ||
-                productDetails.getDescription() == null || productDetails.getDescription().isEmpty() ||
-                productDetails.getPrice() == null || productDetails.getPrice() <= 0 ||
-                productDetails.getCategory() == null || productDetails.getCategory().isEmpty() ||
-                productDetails.getStockQuantity() == null || productDetails.getStockQuantity() < 0) {
-                throw new IllegalArgumentException("All fields except image URL are required, and price must be positive.");
-            }
+    public Product updateProduct(Long productId, Product updatedProduct) {
+        Product existingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new CustomExceptionHandler.ResourceNotFoundException("Product not found with ID: " + productId));
 
-            product.setName(productDetails.getName());
-            product.setDescription(productDetails.getDescription());
-            product.setPrice(productDetails.getPrice());
-            product.setCategory(productDetails.getCategory());
-            product.setStockQuantity(productDetails.getStockQuantity());
-            product.setImageUrl(productDetails.getImageUrl());
-            return productRepository.save(product);
-        }
-        return null;
+        existingProduct.setName(updatedProduct.getName());
+        existingProduct.setDescription(updatedProduct.getDescription());
+        existingProduct.setPrice(updatedProduct.getPrice());
+        existingProduct.setCategory(updatedProduct.getCategory());
+        existingProduct.setStockQuantity(updatedProduct.getStockQuantity());
+        existingProduct.setImageUrl(updatedProduct.getImageUrl());
+
+        return productRepository.save(existingProduct);
     }
 
-    public boolean deleteProduct(Long id) {
-        if (productRepository.existsById(id)) {
-            productRepository.deleteById(id);
+    public boolean deleteProduct(Long productId) {
+        if (productRepository.existsById(productId)) {
+            productRepository.deleteById(productId);
             return true;
         }
-        return false;
+        throw new CustomExceptionHandler.ResourceNotFoundException("Product not found with ID: " + productId);
     }
 }

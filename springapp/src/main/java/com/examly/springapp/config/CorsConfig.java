@@ -1,3 +1,4 @@
+// src/main/java/com/examly/springapp/config/CorsConfig.java
 package com.examly.springapp.config;
 
 import org.springframework.context.annotation.Configuration;
@@ -10,9 +11,8 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:8081") // Allow requests from your React frontend
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
-                .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowedOrigins("*") // Allow all origins for simplicity, restrict in production
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                .allowedHeaders("*");
     }
 }

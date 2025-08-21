@@ -1,3 +1,4 @@
+// src/main/java/com/examly/springapp/model/Product.java
 package com.examly.springapp.model;
 
 import jakarta.persistence.*;
